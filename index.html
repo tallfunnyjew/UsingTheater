@@ -1,11 +1,807 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Using Theater LLC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── TOKENS ──────────────────────────────────────────────────── */
+    :root {
+      --black:   #0c0b0b;
+      --deep:    #141212;
+      --card-bg: #1a1818;
+      --crimson: #b81c35;
+      --gold:    #c9993a;
+      --gold-lt: #e0b85a;
+      --cream:   #f0e8da;
+      --muted:   #9a8f83;
+      --border:  rgba(201,153,58,.22);
+      --ff-head: 'Cormorant Garamond', Georgia, serif;
+      --ff-body: 'Raleway', sans-serif;
+    }
+
+    /* ─── RESET ───────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--cream);
+      font-family: var(--ff-body);
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; width: 100%; object-fit: cover; }
+
+    /* ─── NAV ─────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 5vw;
+      background: rgba(12,11,11,0);
+      backdrop-filter: blur(0px);
+      transition: background .4s, backdrop-filter .4s;
+    }
+    nav.scrolled {
+      background: rgba(12,11,11,.88);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: var(--ff-head);
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      color: var(--gold);
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--cream);
+      opacity: .75;
+      transition: opacity .25s, color .25s;
+    }
+    .nav-links a:hover { opacity: 1; color: var(--gold); }
+
+    /* ─── HERO ────────────────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 10rem 6vw 6rem;
+      overflow: hidden;
+    }
+
+    /* Radial spotlight */
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 55% at 50% 38%,
+          rgba(184,28,53,.18) 0%,
+          transparent 70%),
+        radial-gradient(ellipse 80% 80% at 50% 0%,
+          rgba(201,153,58,.07) 0%,
+          transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Subtle grain */
+    #hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+      opacity: .35;
+      pointer-events: none;
+    }
+
+    /* Horizontal rule lines */
+    .hero-rule {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+      margin: 0 auto 2rem;
+      opacity: .6;
+      animation: fadeDown .8s .3s both;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--ff-body);
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      animation: fadeDown .8s .4s both;
+    }
+
+    .hero-title {
+      font-family: var(--ff-head);
+      font-size: clamp(3rem, 8vw, 7.5rem);
+      font-weight: 300;
+      line-height: 1.06;
+      letter-spacing: -.01em;
+      color: var(--cream);
+      max-width: 900px;
+      margin: 0 auto 1rem;
+      animation: fadeUp 1s .5s both;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-lt);
+    }
+
+    .hero-sub {
+      font-family: var(--ff-head);
+      font-size: clamp(1.1rem, 2.2vw, 1.55rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto 3rem;
+      line-height: 1.6;
+      animation: fadeUp 1s .7s both;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeUp 1s .9s both;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: .85rem 2.4rem;
+      background: var(--crimson);
+      color: var(--cream);
+      font-family: var(--ff-body);
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+      transition: background .25s, transform .2s, box-shadow .25s;
+    }
+    .btn-primary:hover {
+      background: #d02040;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(184,28,53,.35);
+    }
+
+    .btn-outline {
+      display: inline-block;
+      padding: .85rem 2.4rem;
+      background: transparent;
+      color: var(--cream);
+      font-family: var(--ff-body);
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      border: 1px solid rgba(240,232,218,.3);
+      transition: border-color .25s, color .25s, transform .2s;
+    }
+    .btn-outline:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    /* Curtain bars at bottom of hero */
+    .hero-foot {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        var(--crimson) 30%,
+        var(--gold) 50%,
+        var(--crimson) 70%,
+        transparent 100%);
+      opacity: .7;
+    }
+
+    /* ─── SECTION COMMON ──────────────────────────────────────────── */
+    section {
+      padding: 7rem 6vw;
+    }
+    .section-label {
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: var(--ff-head);
+      font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--cream);
+      margin-bottom: 1.5rem;
+    }
+    .section-title em { font-style: italic; color: var(--gold-lt); }
+
+    /* Decorative horizontal rule */
+    .ornament {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 3.5rem;
+    }
+    .ornament-line { flex: 1; height: 1px; background: var(--border); }
+    .ornament-diamond {
+      width: 8px; height: 8px;
+      background: var(--gold);
+      transform: rotate(45deg);
+      opacity: .6;
+    }
+
+    /* ─── ABOUT ───────────────────────────────────────────────────── */
+    #about {
+      background: var(--deep);
+      position: relative;
+    }
+    #about::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    .about-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .about-left .section-label { margin-bottom: .75rem; }
+
+    .about-stat-block {
+      margin-top: 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .about-stat {
+      border-left: 2px solid var(--crimson);
+      padding-left: 1rem;
+    }
+    .about-stat-num {
+      font-family: var(--ff-head);
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: var(--gold-lt);
+      line-height: 1;
+      margin-bottom: .25rem;
+    }
+    .about-stat-label {
+      font-size: .72rem;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .about-right p {
+      font-size: clamp(1.05rem, 1.5vw, 1.22rem);
+      line-height: 1.85;
+      color: rgba(240,232,218,.82);
+      margin-bottom: 1.6rem;
+    }
+    .about-right p:last-child { margin-bottom: 0; }
+
+    .about-quote {
+      border-left: 3px solid var(--crimson);
+      padding: 1rem 1.5rem;
+      margin: 2rem 0;
+      font-family: var(--ff-head);
+      font-size: 1.45rem;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1.5;
+    }
+
+    /* ─── SERVICES ────────────────────────────────────────────────── */
+    #services {
+      background: var(--black);
+    }
+    .services-header {
+      max-width: 1100px;
+      margin: 0 auto 3.5rem;
+    }
+
+    .services-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px;
+    }
+
+    .service-card {
+      position: relative;
+      background: var(--card-bg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform .35s cubic-bezier(.22,.68,0,1.2);
+    }
+    .service-card:hover { transform: translateY(-6px); z-index: 2; }
+
+    /* ---- IMAGE PLACEHOLDER ---- */
+    .service-img {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #1e1b1b;
+      overflow: hidden;
+    }
+    /* Replace the src attribute of the <img> tag inside .service-img
+       with the path to your own graphic. */
+    .service-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .55s ease;
+      opacity: .85;
+    }
+    .service-card:hover .service-img img { transform: scale(1.06); }
+
+    .service-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1e1b1b 0%, #2a2323 100%);
+      gap: .75rem;
+    }
+    .placeholder-icon {
+      font-size: 2.5rem;
+      opacity: .25;
+    }
+    .placeholder-text {
+      font-size: .68rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: .5;
+    }
+
+    /* Top accent bar */
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--crimson), var(--gold));
+      z-index: 1;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .4s ease;
+    }
+    .service-card:hover::before { transform: scaleX(1); }
+
+    .service-body {
+      padding: 2rem 1.75rem 2.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .service-tag {
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      margin-bottom: .75rem;
+    }
+
+    .service-name {
+      font-family: var(--ff-head);
+      font-size: 1.6rem;
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--cream);
+      margin-bottom: 1rem;
+    }
+
+    .service-desc {
+      font-size: .88rem;
+      line-height: 1.75;
+      color: var(--muted);
+      flex: 1;
+    }
+
+    .service-link {
+      margin-top: 1.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      transition: gap .2s, color .2s;
+    }
+    .service-link:hover { gap: .85rem; color: var(--gold-lt); }
+    .service-link::after {
+      content: '→';
+      font-size: .9rem;
+    }
+
+    /* ─── CONTACT ─────────────────────────────────────────────────── */
+    #contact {
+      background: var(--deep);
+      position: relative;
+      overflow: hidden;
+    }
+    #contact::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%,
+        rgba(184,28,53,.1) 0%,
+        transparent 70%);
+      pointer-events: none;
+    }
+    #contact::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    .contact-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+    }
+
+    .contact-inner .section-label { display: block; }
+
+    .contact-inner .section-title { margin-bottom: .75rem; }
+
+    .contact-body {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: rgba(240,232,218,.65);
+      margin-bottom: 3rem;
+    }
+
+    .contact-email {
+      display: inline-block;
+      font-family: var(--ff-head);
+      font-size: clamp(1.3rem, 3vw, 1.9rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--gold-lt);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: .25rem;
+      margin-bottom: 3rem;
+      transition: color .25s, border-color .25s;
+    }
+    .contact-email:hover {
+      color: var(--cream);
+      border-color: var(--gold);
+    }
+
+    .contact-divider {
+      width: 60px;
+      height: 1px;
+      background: var(--border);
+      margin: 2.5rem auto;
+    }
+
+    /* ─── FOOTER ──────────────────────────────────────────────────── */
+    footer {
+      background: #080707;
+      padding: 2.5rem 6vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(201,153,58,.1);
+    }
+    .footer-logo {
+      font-family: var(--ff-head);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: .08em;
+    }
+    .footer-copy {
+      font-size: .72rem;
+      letter-spacing: .08em;
+      color: var(--muted);
+      opacity: .55;
+    }
+
+    /* ─── SCROLL REVEAL ───────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .75s ease, transform .75s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .32s; }
+
+    /* ─── KEYFRAMES ───────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── RESPONSIVE ──────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .about-inner {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .about-stat-block { margin-top: 2rem; }
+      .services-grid {
+        grid-template-columns: 1fr;
+        gap: 1px;
+      }
+      .nav-links { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      section { padding: 5rem 5vw; }
+      .about-stat-block { grid-template-columns: 1fr 1fr; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello from GitHub Pages</h1>
-  <p>This is my static one‑page site.</p>
+
+  <!-- ─── NAV ──────────────────────────────────────────────── -->
+  <nav id="nav">
+    <span class="nav-logo">Using Theater</span>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ─── HERO ─────────────────────────────────────────────── -->
+  <section id="hero">
+    <div class="hero-rule"></div>
+    <p class="hero-eyebrow">Using Theater LLC</p>
+    <h1 class="hero-title">
+      The Power of Theater…<br>
+      <em>On Stage and in the Classroom</em>
+    </h1>
+    <p class="hero-sub">
+      Entertaining audiences, transforming schools, and building community — one performance at a time.
+    </p>
+    <div class="hero-cta-group">
+      <a href="#services" class="btn-primary">Explore Our Programs</a>
+      <a href="#contact" class="btn-outline">Get in Touch</a>
+    </div>
+    <div class="hero-foot"></div>
+  </section>
+
+  <!-- ─── ABOUT ─────────────────────────────────────────────── -->
+  <section id="about">
+    <div class="about-inner">
+
+      <div class="about-left reveal">
+        <p class="section-label">Our Mission</p>
+        <h2 class="section-title">Theater as a<br><em>Living Art Form</em></h2>
+
+        <div class="about-stat-block">
+          <div class="about-stat">
+            <div class="about-stat-num">25+</div>
+            <div class="about-stat-label">Years of Performance</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-num">3</div>
+            <div class="about-stat-label">Distinct Programs</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-num">∞</div>
+            <div class="about-stat-label">Stories to Tell</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-num">PDX</div>
+            <div class="about-stat-label">Portland Based</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-right reveal reveal-delay-2">
+        <div class="ornament">
+          <div class="ornament-line"></div>
+          <div class="ornament-diamond"></div>
+          <div class="ornament-line"></div>
+        </div>
+        <div class="about-quote">
+          "Theater is not just entertainment — it is a lens through which we see ourselves more clearly."
+        </div>
+        <p>
+          We use scripted and unscripted theater to entertain audiences from the stage, as unique and powerful programming in schools, and into the community via classes in our own studio.
+        </p>
+        <p>
+          Whether you're looking for a laugh-out-loud comedy experience, an educational program that transforms your students, or a one-of-a-kind theatrical journey — Using Theater brings the stage to wherever you are.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── SERVICES ──────────────────────────────────────────── -->
+  <section id="services">
+    <div class="services-header reveal">
+      <p class="section-label">What We Do</p>
+      <h2 class="section-title">Our Programs</h2>
+      <div class="ornament">
+        <div class="ornament-line"></div>
+        <div class="ornament-diamond"></div>
+        <div class="ornament-line"></div>
+      </div>
+    </div>
+
+    <div class="services-grid">
+
+      <!-- Card 1 -->
+      <div class="service-card reveal">
+        <div class="service-img">
+          <!--
+            TO ADD YOUR GRAPHIC:
+            Replace the placeholder div below with:
+            <img src="your-change-through-play-image.jpg" alt="Change Through Play" />
+          -->
+          <div class="service-img-placeholder">
+            <div class="placeholder-icon">🎭</div>
+            <div class="placeholder-text">Add your graphic here</div>
+          </div>
+        </div>
+        <div class="service-body">
+          <p class="service-tag">Improv &amp; Training</p>
+          <h3 class="service-name">Change Through Play</h3>
+          <p class="service-desc">Portland's Premier Improv &amp; Training Studio. Step into a space where spontaneity is a skill and play is the curriculum. From beginners to seasoned performers, our studio classes build confidence, connection, and creativity.</p>
+          <a href="https://changethroughplay.com/" target="_blank" rel="noopener" class="service-link">Learn More</a>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-img">
+          <!--
+            TO ADD YOUR GRAPHIC:
+            Replace the placeholder div below with:
+            <img src="your-fake-radio-image.jpg" alt="Fake Radio Comedy Troupe" />
+          -->
+          <div class="service-img-placeholder">
+            <div class="placeholder-icon">📻</div>
+            <div class="placeholder-text">Add your graphic here</div>
+          </div>
+        </div>
+        <div class="service-body">
+          <p class="service-tag">Live Performance</p>
+          <h3 class="service-name">Fake Radio Comedy Troupe</h3>
+          <p class="service-desc">America's Most Popular Old-Time Radio Comedy Troupe since 2001. A wildly unique live show format that recreates the golden age of radio comedy with modern wit — perfect for stages, festivals, and special events nationwide.</p>
+          <a href="https://fakeradio.net" target="_blank" rel="noopener" class="service-link">Learn More</a>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-img">
+          <!--
+            TO ADD YOUR GRAPHIC:
+            Replace the placeholder div below with:
+            <img src="your-wonderful-woman-image.jpg" alt="The Wonderful Woman of OZ" />
+          -->
+          <div class="service-img-placeholder">
+            <div class="placeholder-icon">⭐</div>
+            <div class="placeholder-text">Add your graphic here</div>
+          </div>
+        </div>
+        <div class="service-body">
+          <p class="service-tag">Solo Theater</p>
+          <h3 class="service-name">The Wonderful Woman of OZ</h3>
+          <p class="service-desc">80 pages of dialogue, 27 roles, 0 sets &amp; props, and just ONE amazing actor. A breathtaking solo theatrical experience that reimagines a beloved classic — available for schools, theaters, and community venues of all sizes.</p>
+          <a href="https://thewonderfulwomanofoz.com" target="_blank" rel="noopener" class="service-link">Learn More</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── CONTACT ────────────────────────────────────────────── -->
+  <section id="contact">
+    <div class="contact-inner">
+      <span class="section-label reveal">Get In Touch</span>
+      <h2 class="section-title reveal reveal-delay-1">
+        Ready to Bring<br><em>Theater to Your World?</em>
+      </h2>
+      <p class="contact-body reveal reveal-delay-2">
+        Whether you're booking a performance, interested in studio classes, or looking for a unique school program — we'd love to hear from you.
+      </p>
+      <div class="reveal reveal-delay-2">
+        <a href="mailto:info@usingtheater.com" class="contact-email">info@usingtheater.com</a>
+      </div>
+      <div class="reveal reveal-delay-3">
+        <a href="mailto:info@usingtheater.com" class="btn-primary">Send Us a Message</a>
+      </div>
+      <div class="contact-divider"></div>
+      <p class="footer-copy" style="opacity:.4; font-size:.72rem; letter-spacing:.1em;">Portland, Oregon &nbsp;·&nbsp; Using Theater LLC</p>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─────────────────────────────────────────────── -->
+  <footer>
+    <span class="footer-logo">Using Theater LLC</span>
+    <span class="footer-copy">© 2025 Using Theater LLC · Portland, Oregon</span>
+  </footer>
+
+  <!-- ─── SCRIPTS ────────────────────────────────────────────── -->
+  <script>
+    // Sticky nav on scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
 </body>
 </html>
